@@ -1,0 +1,68 @@
+@extends('layouts.app')
+
+@section('title', 'Новости')
+
+@section('content')
+    <section class="page-section">
+        <h1>Новости</h1>
+        <p class="section-description">Последние новости и публикации.</p>
+
+        <div class="articles-grid">
+            @forelse ($articles as $article)
+                <article class="article-card">
+                    <div class="article-content">
+                        @if ($article->published_at)
+                            <time class="article-date" datetime="{{ $article->published_at->toDateString() }}">
+                                {{ $article->published_at->format('d.m.Y') }}
+                            </time>
+                        @endif
+                        <h2>{{ $article->title }}</h2>
+                        <p>{{ \Illuminate\Support\Str::limit($article->content, 180) }}</p>
+                    </div>
+                </article>
+            @empty
+                <p>Новостей пока нет.</p>
+            @endforelse
+        </div>
+
+        @if ($articles->hasPages())
+            <nav class="articles-pagination" aria-label="Навигация по новостям">
+                <div class="pagination-controls">
+                    @if ($articles->onFirstPage())
+                        <span class="pagination-button is-disabled" aria-disabled="true">
+                            <span aria-hidden="true">&lsaquo;</span>
+                            Назад
+                        </span>
+                    @else
+                        <a class="pagination-button" href="{{ $articles->previousPageUrl() }}" rel="prev">
+                            <span aria-hidden="true">&lsaquo;</span>
+                            Назад
+                        </a>
+                    @endif
+
+                    <span class="pagination-current">
+                        Страница <strong>{{ $articles->currentPage() }}</strong>
+                        из {{ $articles->lastPage() }}
+                    </span>
+
+                    @if ($articles->hasMorePages())
+                        <a class="pagination-button" href="{{ $articles->nextPageUrl() }}" rel="next">
+                            Вперёд
+                            <span aria-hidden="true">&rsaquo;</span>
+                        </a>
+                    @else
+                        <span class="pagination-button is-disabled" aria-disabled="true">
+                            Вперёд
+                            <span aria-hidden="true">&rsaquo;</span>
+                        </span>
+                    @endif
+                </div>
+
+                <p class="pagination-summary">
+                    Показаны записи {{ $articles->firstItem() }}–{{ $articles->lastItem() }}
+                    из {{ $articles->total() }}
+                </p>
+            </nav>
+        @endif
+    </section>
+@endsection
